@@ -3,15 +3,8 @@ const path = require('path')
 const utils = require('./utils')
 const config = require('../config')
 const vueLoaderConfig = require('./vue-loader.conf')
-const webpack = require('webpack')
-const HtmlWebpackPlugin = require('html-webpack-plugin')
-const CopyWebpackPlugin = require('copy-webpack-plugin')
-const CleanWebpackPlugin = require('clean-webpack-plugin')
-const HappyPack = require('happypack')
-const os = require('os')
-const happyThreadPool = HappyPack.ThreadPool({ size: os.cpus().length })
 
-function resolve(dir) {
+function resolve (dir) {
   return path.join(__dirname, '..', dir)
 }
 
@@ -29,20 +22,20 @@ const createLintingRule = () => ({
 module.exports = {
   context: path.resolve(__dirname, '../'),
   entry: {
-    app: ['babel-polyfill', 'event-source-polyfill', './src/main.js']
+    app: ['babel-polyfill', './src/main.js']
   },
   output: {
     path: config.build.assetsRoot,
-    filename: 'build.[hash].js',
-    publicPath:
-      process.env.NODE_ENV === 'production'
-        ? config.build.assetsPublicPath
-        : config.dev.assetsPublicPath
+    filename: '[name].js',
+    publicPath: process.env.NODE_ENV === 'production'
+      ? config.build.assetsPublicPath
+      : config.dev.assetsPublicPath
   },
   resolve: {
     extensions: ['.js', '.vue', '.json'],
     alias: {
-      '@': resolve('src')
+      'vue$': 'vue/dist/vue.esm.js',
+      '@': resolve('src'),
     }
   },
   module: {
@@ -50,17 +43,13 @@ module.exports = {
       ...(config.dev.useEslint ? [createLintingRule()] : []),
       {
         test: /\.vue$/,
-        loader: 'happypack/loader?id=happypack-vue'
+        loader: 'vue-loader',
+        options: vueLoaderConfig
       },
       {
         test: /\.js$/,
-        loader: 'happypack/loader?id=happypack-js',
-        include: [
-          resolve('src'),
-          resolve('test'),
-          resolve('node_modules/webpack-dev-server/client')
-        ],
-        exclude: /node_modules/
+        loader: 'babel-loader',
+        include: [resolve('src'), resolve('test'), resolve('node_modules/webpack-dev-server/client')]
       },
       {
         test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,
@@ -99,39 +88,5 @@ module.exports = {
     net: 'empty',
     tls: 'empty',
     child_process: 'empty'
-  },
-  plugins: [
-    new webpack.DllReferencePlugin({
-      context: __dirname,
-      manifest: require('./vendor-manifest.json')
-    }),
-    new HtmlWebpackPlugin({
-      inject: true,
-      template: './index.html'
-    }),
-    new CopyWebpackPlugin([{ from: 'static', to: 'static' }]),
-    new CleanWebpackPlugin(['dist']),
-    new HappyPack({
-      id: 'happypack-js',
-      loaders: [{
-        loader: 'babel-loader',
-      }],
-      threadPool: happyThreadPool,
-      verbose: true,
-    }),
-    new HappyPack({
-      id: 'happypack-vue',
-      loaders: [{
-        loader: 'vue-loader',
-        options: vueLoaderConfig
-      }],
-      threadPool: happyThreadPool,
-      verbose: true,
-    })
-  ],
-  devServer: {
-    historyApiFallback: true,
-    noInfo: true,
-    contentBase: path.join(__dirname, 'dist')
   }
 }

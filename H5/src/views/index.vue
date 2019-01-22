@@ -3,63 +3,66 @@
     <header class="full-width clearfix">
       <strong class="size20">Backstage Management System</strong>
       <section class="pull-right size16">
-        <!-- <span class="pointer m-x-l-1" @click="logoutModal = true">退出登录</span> -->
-        <Dropdown trigger="hover" style="margin-left: 20px">
-          <a href="javascript:void(0)">
-              <span class="size18 m-x-r-1 name">{{ name }}</span>
-              <Avatar src="https://i.loli.net/2017/08/21/599a521472424.jpg" />
-          </a>
-          <DropdownMenu slot="list">
-            <DropdownItem>
-              <span @click="updatePsd">
-                <Icon type="md-unlock" class="m-x-r-1" />修改密码
-              </span>
-            </DropdownItem>
-            <DropdownItem divided>
-              <span @click="logoutModal = true">
-                <Icon type="md-log-out" class="m-x-r-1" />退出登录
-                </span>
-            </DropdownItem>
-          </DropdownMenu>
-        </Dropdown>
+        <el-dropdown @command="handleCommand" class="pull-rught">
+          <span class="el-dropdown-link">
+            <span class="size18 m-x-r-1 name pointer">{{ name }}</span>
+          </span>
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item command="0">
+              <el-icon type="md-unlock" class="m-x-r-1" />修改密码
+            </el-dropdown-item>
+            <el-dropdown-item command="1" divided>
+              <el-icon type="md-log-out" class="m-x-r-1" />退出登录
+            </el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown>
       </section>
     </header>
-    <main>
-      <nav-menu ref="navMenu" :menuList="menuList"></nav-menu>
-      <div class="router-container p-2">
-        <router-view></router-view>
-      </div>
+    <main class="full-width">
+      <nav-menu ref="navMenu" :menuList="menuList" @route-reload="routeReload" @menuCollapse="menuCollapse"></nav-menu>
+      <article :class="['router-container', 'p-2', 'full', { 'article-collapse': isCollapse }]">
+        <router-view v-if="routeIsReload"></router-view>
+      </article>
     </main>
 
-    <Modal
-      title="退出登录"
-      v-model="logoutModal"
-      :mask-closable="false"
-      :closable="false"
-      @on-ok="logout">
+    <el-dialog
+      title="提示"
+      :visible.sync="logoutModal"
+      width="30%"
+      :close-on-click-modal="false"
+      :close-on-press-escape="false"
+      :show-close="false">
         <p>确认退出登录？</p>
-    </Modal>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="logoutModal = false">取 消</el-button>
+          <el-button type="primary" @click="logout">确 认</el-button>
+        </div>
+    </el-dialog>
 
     <!-- 修改密码弹窗 -->
-    <Modal
-      v-model="resetPsdModal"
+    <el-dialog
       title="修改密码"
-      :mask-closable="false"
-      :closable="false"
-      @on-ok="confirm('form')"
-      @on-cancel="cancel">
-      <Form ref="form" :model="form" :rules="rules" :label-width="80">
-        <FormItem label="原密码" prop="oriPsd">
-          <Input type="password" v-model="form.oriPsd"></Input>
-        </FormItem>
-        <FormItem label="新密码" prop="newPsd">
-          <Input type="password" v-model="form.newPsd"></Input>
-        </FormItem>
-        <FormItem label="请确认" prop="conPsd">
-          <Input type="password" v-model="form.conPsd"></Input>
-        </FormItem>
-      </Form>
-    </Modal>
+      :visible.sync="resetPsdModal"
+      width="30%"
+      :close-on-click-modal="false"
+      :close-on-press-escape="false"
+      :show-close="false">
+      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+        <el-form-item label="原密码" prop="oriPsd">
+          <el-input type="password" v-model="form.oriPsd"></el-input>
+        </el-form-item>
+        <el-form-item label="新密码" prop="newPsd">
+          <el-input type="password" v-model="form.newPsd"></el-input>
+        </el-form-item>
+        <el-form-item label="请确认" prop="conPsd">
+          <el-input type="password" v-model="form.conPsd"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="cancel">取 消</el-button>
+        <el-button type="primary" @click="confirm('form')">确 认</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -87,6 +90,8 @@ export default {
       }
     }
     return {
+      routeIsReload: false,
+      isCollapse: false,
       name: '',
       menuList: [],
       logoutModal: false,
@@ -112,20 +117,23 @@ export default {
     }
   },
   methods: {
-    /**
-     * @description 退出登录
-     */
+    handleCommand (command) {
+      switch (command) {
+        case '0':
+          this.resetPsdModal = true
+          break
+        case '1':
+          this.logoutModal = true
+          break
+        default:
+          return false
+      }
+    },
+
     logout () {
       this.$store.dispatch('userLogout').then(() => {
         this.$router.replace('login')
       })
-    },
-
-    /**
-     * @description 更新密码
-     */
-    updatePsd () {
-      this.resetPsdModal = true
     },
 
     confirm (name) {
@@ -144,11 +152,21 @@ export default {
     },
 
     cancel () {
+      this.resetPsdModal = false
       this.form = {
         oriPsd: '',
         newPsd: '',
         conPsd: ''
       }
+    },
+
+    routeReload () {
+      this.routeIsReload = false
+      this.$nextTick(() => { this.routeIsReload = true })
+    },
+
+    menuCollapse (val) {
+      this.isCollapse = val
     }
   },
   mounted () {
@@ -162,9 +180,6 @@ export default {
     }).then(response => {
       this.name = response.name
       this.menuList = response.menu
-      this.$nextTick(() => {
-        this.$refs.navMenu.activeName = this.$route.name
-      })
     }).catch(() => {
       this.$message.error('验证用户信息失败，请重新登录。')
       this.$dispatch('userLogout').then(() => {
@@ -176,8 +191,7 @@ export default {
 </script>
 <style lang="less" scoped>
 .index {
-  display: flex;
-  flex-direction: column;
+  position: relative;
   > header {
     height: 50px;
     line-height: 50px;
@@ -189,11 +203,19 @@ export default {
     }
   }
   > main {
-    flex: 1;
-    display: flex;
+    position: absolute;
+    top: 50px;
+    left: 0;
+    bottom: 0;
     .router-container {
-      flex: 1;
+      position: absolute;
+      left: 200px;
+      right: 0;
+      width: auto;
     }
+  }
+  .article-collapse {
+    left: 64px !important;
   }
 }
 </style>

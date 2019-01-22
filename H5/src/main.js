@@ -14,9 +14,9 @@ import './assets/style/base.css'
 import './assets/style/common.css'
 import './assets/style/global.less'
 
-import 'iview/dist/styles/iview.css'
-import './utils/iView.import'
-import './assets/style/iView.cover.less'
+import '../theme/index.css'
+import './assets/style/elementUi.cover.less'
+import './utils/elementUi.import'
 
 Vue.use(VueRouter)
 Vue.use(Vuex)
@@ -75,5 +75,6 @@ new Vue({
   el: '#app',
   router,
   store: appStore,
-  render: h => h(App)
+  components: { App },
+  template: '<App/>'
 })

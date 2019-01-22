@@ -23,12 +23,12 @@ export default new Router({
         {
           name: 'userManage',
           path: '/userManage',
-          component: () => import(/* webpackChunkName: "systemManage" */ '../views/systemManage/userManage.vue')
+          component: () => import(/* webpackChunkName: "systemManage" */ '../views/systemManage/UserManage.vue')
         },
         {
           name: 'roleManage',
           path: '/roleManage',
-          component: () => import(/* webpackChunkName: "systemManage" */ '../views/systemManage/roleManage.vue')
+          component: () => import(/* webpackChunkName: "systemManage" */ '../views/systemManage/RoleManage.vue')
         }
       ]
     }

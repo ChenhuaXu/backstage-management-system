@@ -1,50 +1,79 @@
 <template>
-  <div class="role-manage">
+  <div class="role-manage bg-white p-2">
     <header>
-      <Button type="primary" @click="operate(null)">新增</Button>
+      <el-button type="primary" @click="operate(null)">新增</el-button>
       <section class="pull-right">
-        <Input v-model.trim="queryForm.name" type="text" placeholder="请输入角色名称" style="width: 200px" />
-        <Button type="primary" @click="query(1, pageSize)">查询</Button>
+        <el-input v-model.trim="queryForm.name" type="text" placeholder="请输入角色名称" style="width: 200px"></el-input>
+        <el-button type="primary" @click="query(1, pageSize)">查询</el-button>
       </section>
     </header>
-    <main class="m-y-2">
-      <Table highlight-row ref="table" :columns="columns" :data="tableData"></Table>
-    </main>
-    <footer class="text-right">
-      <Page
+    <main class="m-y-t-2">
+      <el-table
+        :data="tableData"
+        style="width: 100%"
+        highlight-current-row>
+        <el-table-column type="index" label="序号" align="center" width="60"></el-table-column>
+        <el-table-column prop="name" label="角色名称" align="center" show-overflow-tooltip></el-table-column>
+        <el-table-column prop="status" label="启用状态" align="center" show-overflow-tooltip>
+          <template slot-scope="scope">
+            <el-tag :type="scope.row.status === '0' ? 'success' : 'danger'">
+              {{ scope.row.status === '0' ? '启用' : '禁用' }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column prop="action" label="操作" align="center" show-overflow-tooltip :width="150">
+          <template slot-scope="scope">
+            <el-button type="primary" @click="operate(scope)">编辑</el-button>
+            <el-button type="danger" @click="remove(scope)">删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <el-pagination
+        class="m-y-t-2 text-right"
         :total="totalCount"
+        :current-page="currentPage"
         :page-size="pageSize"
-        :page-size-opts="[10, 20, 30, 40]"
-        @on-change="currentPageChange"
-        @on-page-size-chang="pageSizeChange"
-        show-total
-        show-elevator show-sizer />
-    </footer>
+        :page-sizes="pageSizes"
+        layout="total, sizes, prev, pager, next, jumper"
+        @current-change="currentPageChange"
+        @size-change="pageSizeChange">
+      </el-pagination>
+    </main>
+
     <!-- 新增修改弹窗 -->
-    <Modal
-      v-model="modalVisible"
+    <el-dialog
       :title="`${modalTitle}角色`"
+      :visible.sync="modalVisible"
       :mask-closable="false"
-      :closable="false"
-      @on-ok="confirmOperate"
-      @on-cancel="cancelOperate">
-      <Form ref="form" :model="form" :label-width="80">
-        <FormItem label="角色名称" prop="name">
-          <Input type="text" v-model="form.name"></Input>
-        </FormItem>
-        <FormItem label="启用状态" prop="status">
-          <RadioGroup v-model="form.status">
-            <Radio label="0">启用</Radio>
-            <Radio label="1">禁用</Radio>
-          </RadioGroup>
-        </FormItem>
-        <FormItem label="绑定菜单" prop="menu">
-          <section class="menu-tree-container">
-            <Tree :data="menuList" show-checkbox></Tree>
-          </section>
-        </FormItem>
-      </Form>
-    </Modal>
+      width="30%"
+      :close-on-click-modal="false"
+      :close-on-press-escape="false"
+      :show-close="false">
+      <el-form ref="form" :model="form" label-width="80px">
+        <el-form-item label="角色名称" prop="name">
+          <el-input type="search" v-model="form.name"></el-input>
+        </el-form-item>
+        <el-form-item label="启用状态" prop="status">
+          <el-radio-group v-model="form.status">
+            <el-radio label="0">启用</el-radio>
+            <el-radio label="1">禁用</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item label="绑定菜单" prop="menu">
+          <el-tree
+            ref="menuTree"
+            :data="menuList"
+            show-checkbox
+            :props="treeProps"
+            default-expand-all>
+          </el-tree>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="cancelOperate">取 消</el-button>
+        <el-button type="primary" @click="confirmOperate('form')">确 认</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -59,74 +88,17 @@ export default {
       },
       loading: false,
       tableData: [],
-      columns: [
-        {
-          type: 'index',
-          width: 60,
-          align: 'center'
-        },
-        {
-          title: '角色名称',
-          key: 'name',
-          align: 'center'
-        },
-        {
-          title: '启用状态',
-          key: 'status',
-          align: 'center',
-          render: (h, params) => {
-            return h('div', [
-              h('Button', {
-                props: {
-                  type: params.row.status === '0' ? 'success' : 'error',
-                  size: 'small'
-                }
-              }, params.row.status === '0' ? '启用' : '禁用')
-            ])
-          }
-        },
-        {
-          title: '操作',
-          key: 'action',
-          width: 150,
-          align: 'center',
-          render: (h, params) => {
-            return h('div', [
-              h('Button', {
-                props: {
-                  type: 'primary',
-                  size: 'small'
-                },
-                style: {
-                  marginRight: '5px'
-                },
-                on: {
-                  click: () => {
-                    this.operate(params)
-                  }
-                }
-              }, '编辑'),
-              h('Button', {
-                props: {
-                  type: 'error',
-                  size: 'small'
-                },
-                on: {
-                  click: () => {
-                    this.remove(params)
-                  }
-                }
-              }, '删除')
-            ])
-          }
-        }
-      ],
       currentPage: 1,
       pageSize: 10,
+      pageSizes: [10, 20, 30, 40],
       totalCount: 0,
       modalVisible: false,
       modalTitle: '',
       menuList: [],
+      treeProps: {
+        label: 'title',
+        children: 'children'
+      },
       form: {
         name: '',
         status: '0'

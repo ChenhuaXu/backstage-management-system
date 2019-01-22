@@ -6,9 +6,9 @@
       </section>
       <section class="pull-left">
         <p class="text-center color-white size30 m-y-b-4">SIGN IN</p>
-        <Input v-model.trim="form.name" type="text" placeholder="Enter name" size="large" autofocus class="m-y-b-4" />
-        <Input v-model.trim="form.password" type="password" placeholder="Enter password" size="large" class="m-y-b-4" />
-        <Button type="info" size="large" class="full-width" :loading="loading" @click="login">LOGIN</Button>
+        <el-input v-model.trim="form.name" type="text" placeholder="Enter name" size="large" autofocus class="m-y-b-4"></el-input>
+        <el-input v-model.trim="form.password" type="password" placeholder="Enter password" size="large" class="m-y-b-4"></el-input>
+        <el-button type="primary" size="large" class="full-width" :loading="loading" @click="login">LOGIN</el-button>
       </section>
     </main>
   </div>

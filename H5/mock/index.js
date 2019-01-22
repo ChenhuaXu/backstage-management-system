@@ -29,8 +29,8 @@ router.get('/userInfo', async (ctx, next) => {
         {
           label: '系统管理',
           name: 'systemManage',
-          id: 1,
-          icon: 'ios-list-box',
+          id: '1',
+          icon: 'el-icon-setting',
           children: [
             {
               label: '用户管理',
@@ -59,19 +59,19 @@ router.get('/userList', async (ctx, next) => {
       totalNum: 3,
       dataList: [
         {
-          id: 1,
+          id: '1',
           name: 'aaa',
           role: 'admin,test',
           status: '0'
         },
         {
-          id: 2,
+          id: '2',
           name: 'bbb',
           role: 'developer',
           status: '1'
         },
         {
-          id: 3,
+          id: '3',
           name: 'ccc',
           role: 'developer,test',
           status: '0'
@@ -110,17 +110,17 @@ router.get('/userRoleList', async (ctx, next) => {
       totalNum: 3,
       dataList: [
         {
-          id: 1,
+          id: '1',
           name: 'aaa',
           status: '0'
         },
         {
-          id: 2,
+          id: '2',
           name: 'bbb',
           status: '1'
         },
         {
-          id: 3,
+          id: '3',
           name: 'ccc',
           status: '0'
         }

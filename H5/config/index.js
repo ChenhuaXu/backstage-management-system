@@ -4,7 +4,7 @@
 
 const path = require('path')
 
-const url = 'localhost:8888' // mock
+const url = 'localhost:8888' // mock-url
 
 module.exports = {
   dev: {
