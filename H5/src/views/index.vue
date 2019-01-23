@@ -6,6 +6,9 @@
         <el-dropdown @command="handleCommand" class="pull-rught">
           <span class="el-dropdown-link">
             <span class="size18 m-x-r-1 name pointer">{{ name }}</span>
+            <span class="head-container">
+              <img class="head-icon full" src="https://i.loli.net/2017/08/21/599a521472424.jpg" />
+            </span>
           </span>
           <el-dropdown-menu slot="dropdown">
             <el-dropdown-item command="0">
@@ -90,7 +93,7 @@ export default {
       }
     }
     return {
-      routeIsReload: false,
+      routeIsReload: true,
       isCollapse: false,
       name: '',
       menuList: [],
@@ -195,11 +198,26 @@ export default {
   > header {
     height: 50px;
     line-height: 50px;
-    background: @light_primary;
+    background: linear-gradient(60deg, rgba(64, 168, 255, 1), rgba(64, 168, 255, .6), rgba(64, 168, 255, .2));
     color: @white;
     padding: 0 20px;
+    box-shadow: 0 4px 4px 0 rgba(0,0,0,.1);
     .name {
-      color: @white;
+      color: @primary;
+      letter-spacing: 1px;
+      font-weight: 600;
+    }
+    .head-container {
+      display: inline-block;
+      text-align: center;
+      white-space: nowrap;
+      position: relative;
+      overflow: hidden;
+      vertical-align: middle;
+      width: 32px;
+      height: 32px;
+      line-height: 32px;
+      border-radius: 16px;
     }
   }
   > main {

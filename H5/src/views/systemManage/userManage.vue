@@ -1,5 +1,5 @@
 <template>
-  <div class="user-manage bg-white p-2">
+  <div class="user-manage bg-white box-shadow p-2">
     <header>
       <el-button type="primary" @click="operate(null)">新增</el-button>
       <section class="pull-right">
