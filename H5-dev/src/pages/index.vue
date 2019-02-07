@@ -65,13 +65,6 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-
-    <v-snackbar
-      v-model="snackbar"
-      top
-      :timeout="3000">
-      {{ snackbarText }}
-    </v-snackbar>
   </v-app>
 </template>
 
@@ -119,9 +112,7 @@ export default {
       conPsdErrors: [
         v => !!v || '请输入新密码',
         v => v === this.form.newPsd || '两次输入密码不一致'
-      ],
-      snackbar: false,
-      snackbarText: ''
+      ]
     }
   },
   methods: {
@@ -144,8 +135,7 @@ export default {
     submit () {
       if (this.$refs.form.validate()) {
         systemApi.updatePassord().then(({resultCode, result, msg}) => {
-          this.snackbarText = msg
-          this.snackbar = true
+          this.$toast(msg)
           this.resetPsdModal = false
           this.clear()
         })
@@ -166,8 +156,7 @@ export default {
       this.username = response.name
       this.menuList = response.menu
     }).catch(() => {
-      this.snackbarText = '验证用户信息失败，请重新登录'
-      this.snackbar = true
+      this.$toast('验证用户信息失败，请重新登录')
       setTimeout(() => {
         this.$store.dispatch('userLogout').then(() => {
           this.$router.replace('login')

@@ -94,13 +94,6 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-
-    <v-snackbar
-      v-model="snackbar"
-      top
-      :timeout="3000">
-      {{ snackbarText }}
-    </v-snackbar>
   </v-card>
 </template>
 
@@ -158,9 +151,7 @@ export default {
       statusErrors: [
         v => !!v || '请选择启用状态'
       ],
-      rcdOpeType: '0',
-      snackbar: false,
-      snackbarText: ''
+      rcdOpeType: '0'
     }
   },
   computed: {
@@ -204,8 +195,7 @@ export default {
           params = {}
         }
         request(params).then(({resultCode, result, msg}) => {
-          this.snackbarText = msg
-          this.snackbar = true
+          this.$toast(msg)
           this.dialog = false
           this.query(this.pagination.page, this.pagination.rowsPerPage)
           this.cancelOperate()
@@ -223,8 +213,7 @@ export default {
 
     remove (params) {
       systemApi.removeUser().then(({resultCode, result, msg}) => {
-        this.snackbarText = msg
-        this.snackbar = true
+        this.$toast(msg)
         this.query(this.pagination.page, this.pagination.rowsPerPage)
       })
     },

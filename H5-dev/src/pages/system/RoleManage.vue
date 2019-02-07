@@ -44,8 +44,8 @@
           </v-btn>
         </td>
       </template>
-      <v-alert slot="no-results" :value="true" color="error" icon="warning">
-        您所查找的 "{{ queryForm.name }}" 未匹配到任何结果。
+      <v-alert slot="no-results" :value="true" color="warning" icon="warning" outline>
+        未匹配到任何结果。
       </v-alert>
     </v-data-table>
 
@@ -90,13 +90,6 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-
-    <v-snackbar
-      v-model="snackbar"
-      top
-      :timeout="3000">
-      {{ snackbarText }}
-    </v-snackbar>
   </v-card>
 </template>
 
@@ -150,9 +143,7 @@ export default {
       statusErrors: [
         v => !!v || '请选择启用状态'
       ],
-      rcdOpeType: '0',
-      snackbar: false,
-      snackbarText: ''
+      rcdOpeType: '0'
     }
   },
   computed: {
@@ -196,8 +187,7 @@ export default {
           params = {}
         }
         request(params).then(({resultCode, result, msg}) => {
-          this.snackbarText = msg
-          this.snackbar = true
+          this.$toast(msg)
           this.dialog = false
           this.query(this.pagination.page, this.pagination.rowsPerPage)
           this.cancelOperate()
@@ -216,8 +206,7 @@ export default {
 
     remove (params) {
       systemApi.removeUser().then(({resultCode, result, msg}) => {
-        this.snackbarText = msg
-        this.snackbar = true
+        this.$toast(msg)
         this.query(this.pagination.page, this.pagination.rowsPerPage)
       })
     },

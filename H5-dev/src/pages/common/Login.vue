@@ -7,13 +7,6 @@
         <v-btn block :loading="loading" :disabled="loading" color="primary" @click="login" class="login-btn">LOGIN</v-btn>
     </main>
 
-    <v-snackbar
-      v-model="snackbar"
-      top
-      :timeout="3000">
-      {{ snackbarText }}
-    </v-snackbar>
-
     <vue-particles
       color="#2d8cf0"
       :particleOpacity="0.2"
@@ -44,9 +37,7 @@ export default {
         name: '',
         password: ''
       },
-      loading: false,
-      snackbar: false,
-      snackbarText: ''
+      loading: false
     }
   },
   methods: {
@@ -55,8 +46,7 @@ export default {
      */
     login () {
       if (!this.form.name || !this.form.password) {
-        this.snackbarText = '请完整填写登录信息'
-        this.snackbar = true
+        this.$toast('请完整填写登录信息')
         return false
       } else {
         this.loading = true

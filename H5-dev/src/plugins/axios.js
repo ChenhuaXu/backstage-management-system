@@ -1,7 +1,7 @@
 import axios from 'axios'
-// import { getToken } from './index'
 import appRouter from '../router'
 import { getToken } from '@/plugins'
+import Vue from 'vue'
 
 /**
  * @description 创建axios实例&配置基本属性
@@ -40,7 +40,7 @@ http.interceptors.request.use(
   config => {
     // 判断当前网络状态
     if (!navigator.onLine) {
-      alert('连接服务器失败，请检查当前网络环境')
+      Vue.prototype.$toast('连接服务器失败，请检查当前网络环境')
       return false
     }
     // 防止重复提交，在发送ajax请求前执行取消操作
@@ -77,13 +77,13 @@ http.interceptors.response.use(
       if (response.data && response.data.resultCode === '000000') {
         return response.data
       } else if (response.data && response.data.msg) {
-        alert(response.data.msg)
+        Vue.prototype.$toast(response.data.msg)
         return
       } else {
         return
       }
     }
-    alert('请求失败，请稍后再试。')
+    Vue.prototype.$toast('请求失败，请稍后再试。')
   },
   error => {
     // 特殊状态码处理
@@ -94,7 +94,7 @@ http.interceptors.response.use(
       error.response.status === 401
     ) {
       // 鉴定登录状态
-      alert('用户登录信息已过期，请重新登录。')
+      Vue.prototype.$toast('用户登录信息已过期，请重新登录。')
       window.localStorage.clear()
       setTimeout(() => {
         appRouter.replace({ path: '/login' })
@@ -115,7 +115,7 @@ http.interceptors.response.use(
       error.response.status &&
       error.response.status === 504
     ) {
-      alert('连接服务器超时，请稍后再试。')
+      Vue.prototype.$toast('连接服务器超时，请稍后再试。')
       return
     }
     // return Promise.reject(error)

@@ -17,10 +17,13 @@ import './assets/style/global.less'
 import './plugins/vuetify'
 
 import VueParticles from 'vue-particles'
-Vue.use(VueParticles)
-
+import toastRegistry from './components/toast'
+ 
 Vue.use(VueRouter)
 Vue.use(Vuex)
+
+Vue.use(toastRegistry)
+Vue.use(VueParticles)
 
 Vue.config.productionTip = false
 
