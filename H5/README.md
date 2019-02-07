@@ -1,6 +1,6 @@
 # 项目说明
 
-> 本项目是基于vue前端框架，配套使用vue-router（路由管理）+vuex（状态管理）+axios（基于promise的http库）+iView（UI组件库），构建的一套前端通用管理系统框架。
+> 本项目是基于vue前端框架，配套使用vue-router（路由管理）+ vuex（状态管理）+ axios（基于promise的http库）+ element-ui（UI组件库），构建的一套前端通用管理系统框架。
 
 
 ## 项目常用指令
@@ -17,7 +17,7 @@
 
 * 启动模拟请求服务： `cd mock` 后 `node index.js`
 
-  *** 模拟请求地址：http://localhost:8888，在mock/index.js可配置模拟数据，每次更新index文件要重新执行 `node index.js` ***
+  *** 模拟请求地址：http://localhost:8888，在mock/index.js文件中可配置模拟数据，每次更新index文件要重新执行 `node index.js` ***
 
 * 打包项目： `npm run build`
 
